@@ -1,0 +1,31 @@
+{
+    "name": "react-native-calendar-timetable",
+    "description": "Timetable (schedule) component for React Native applications",
+    "version": "0.0.1",
+    "private": false,
+    "main": "index",
+    "author": {
+        "name": "Dmytro Kardava",
+        "email": "dima.kardava@gmail.com",
+        "url": "https://github.com/dorkyboi"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dorkyboi/react-native-calendar-timetable.git"
+    },
+    "keywords": [
+        "react-native",
+        "react",
+        "native",
+        "expo",
+        "timeline",
+        "calendar",
+        "timetable",
+        "schedule"
+    ],
+    "dependencies": {
+        "react": "^17.0.2",
+        "react-native": "^0.63"
+    },
+    "license": "MIT"
+}
