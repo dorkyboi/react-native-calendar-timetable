@@ -2,6 +2,11 @@
 
 Timetable (schedule) component for React Native applications
 
+![1](https://user-images.githubusercontent.com/23461412/145890144-07eff339-0658-41f2-8318-dbaa502db103.png)
+![2](https://user-images.githubusercontent.com/23461412/145890153-13b72083-b530-4af7-9c20-7093cddbca14.png)
+
+
+
 ## Installation
 
 ```shell
