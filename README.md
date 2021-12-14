@@ -143,6 +143,7 @@ All of these keys must be defined on `style` prop, e.g. `style.container`.
 
 | Key | Type | Default | Description |
 |---|---|---|---|
+| enableSnapping | Boolean | `false` | Enables snapping to columns on scroll |
 | scrollViewProps | Object |  | Props for horizontal ScrollView |
 | renderHeader | Function |  | Function that renders column header text `({date, start, end}) => {}` where `start` and `end` are start and end of the day (column)
 | startProperty | String | `'startDate'` | Name of the property that has item's start date |
