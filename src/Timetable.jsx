@@ -58,12 +58,13 @@ const validateRange = ({date, range}) => {
  * @param {?Number} props.linesLeftInset How far the lines are moved left from time's right border
  * @param {?Number} props.columnHorizontalPadding Space between column borders and column cards
  *
- * @param {?Object} props.scrollViewProps
- * @param {?Function} props.renderHeader Function that renders column header text
- * @param {?string} props.startProperty Name of the item's start property
- * @param {?string} props.endProperty Name of the item's end property
- * @param {?number} props.fromHour
- * @param {?number} props.toHour
+ * @param {?Boolean} props.enableSnapping Enables snapping to columns on scroll
+ * @param {?Object} props.scrollViewProps Props for horizontal ScrollView
+ * @param {?Function} props.renderHeader Function that renders column header text `({date, start, end}) => {}` where `start` and `end` are start and end of the day (column)
+ * @param {?String} props.startProperty Name of the property that has item's start date
+ * @param {?String} props.endProperty Name of the property that has item's end date
+ * @param {?Number} props.fromHour First hour of the timetable
+ * @param {?Number} props.toHour Last hour of the timetable
  *
  * @returns {JSX.Element}
  */
@@ -210,7 +211,11 @@ export default function Timetable(props) {
     };
 
     return (
-        <ScrollView horizontal={true} {...props.scrollViewProps}>
+        <ScrollView
+            horizontal={true}
+            snapToInterval={props.enableSnapping ? columnWidth : null}
+            {...props.scrollViewProps}
+        >
             <View style={props.style?.container}>
                 <View style={[styles.row, props.style?.headersContainer]}>
                     {columnDays.length > 1 && columnDays.map((day, columnIndex) => (
