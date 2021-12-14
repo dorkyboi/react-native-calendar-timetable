@@ -17,6 +17,8 @@ const hours = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
 const minDiff = (a, b) => Math.floor(Math.abs(b - a) / 1000 / 60);
 const daysDiff = (a, b) => Math.floor(Math.abs(b - a) / 1000 / 60 / 60 / 24) || 0;
 
+const shouldRenderHeaders = (columnsAmount, headersEnabled) => headersEnabled === undefined ? columnsAmount > 1 : headersEnabled;
+
 const renderDefaultHeader = day => {
     const date = day.date.getDate();
     const month = day.date.getMonth();
@@ -60,7 +62,7 @@ const validateRange = ({date, range}) => {
  *
  * @param {?Boolean} props.enableSnapping Enables snapping to columns on scroll
  * @param {?Object} props.scrollViewProps Props for horizontal ScrollView
- * @param {?Function} props.renderHeader Function that renders column header text `({date, start, end}) => {}` where `start` and `end` are start and end of the day (column)
+ * @param {?(Function|Boolean)} props.renderHeader Determines if headers should be rendered and how. By default headers are hidden if there's one column and shown otherwise. Pass `false` to hide headers or pass function that renders column header text `({date, start, end}) => {}` where `start` and `end` are start and end of the day (column)
  * @param {?String} props.startProperty Name of the property that has item's start date
  * @param {?String} props.endProperty Name of the property that has item's end date
  * @param {?Number} props.fromHour First hour of the timetable
@@ -218,7 +220,7 @@ export default function Timetable(props) {
         >
             <View style={props.style?.container}>
                 <View style={[styles.row, props.style?.headersContainer]}>
-                    {columnDays.length > 1 && columnDays.map((day, columnIndex) => (
+                    {shouldRenderHeaders(columnDays.length, !!props.renderHeader) && columnDays.map((day, columnIndex) => (
                         <View key={String(columnIndex)} style={{
                             width: columnWidth,
                             height: columnHeaderHeight,
@@ -228,7 +230,7 @@ export default function Timetable(props) {
                             ...props.style?.headerContainer,
                         }}>
                             <Text style={props.style?.headerText}>
-                                {(props.renderHeader || renderDefaultHeader)(day)}
+                                {(typeof props.renderHeader === 'function' ? props.renderHeader : renderDefaultHeader)(day)}
                             </Text>
                         </View>
                     ))}
