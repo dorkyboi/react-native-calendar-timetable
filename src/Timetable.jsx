@@ -85,7 +85,7 @@ export default function Timetable(props) {
     const toHour = props.hasOwnProperty('toHour') ? props.toHour : 24;
 
     const columnDays = React.useMemo(() => {
-        const amountOfDays = daysDiff(range.till, range.from) + 1;
+        const amountOfDays = daysDiff(new Date(range.till), new Date(range.from)) + 1;
         const days = [];
 
         for (let i = 0; i < amountOfDays; i++) {
