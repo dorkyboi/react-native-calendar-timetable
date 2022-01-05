@@ -1,21 +1,9 @@
 import React from "react";
 import {Text, useWindowDimensions, View, ScrollView} from "react-native";
-import NowLine from "./NowLine";
-
-function dateRangesOverlap(aStart, aEnd, bStart, bEnd) {
-    if (aStart <= bStart && bStart <= aEnd)
-        return true; // b starts in a
-    if (aStart <= bEnd && bEnd <= aEnd)
-        return true; // b ends in a
-    if (bStart <= aStart && aEnd <= bEnd)
-        return true; // a in b
-    return false;
-}
-
-const hours = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-
-const minDiff = (a, b) => Math.floor(Math.abs(b - a) / 1000 / 60);
-const daysDiff = (a, b) => Math.floor(Math.abs(b - a) / 1000 / 60 / 60 / 24) || 0;
+import NowLine from "./components/NowLine";
+import {clusterizer, prepareTimetable, setClusterWidth, setNodesPosition} from "./helpers/eventsPreparer";
+import {hours} from "./constants/constants";
+import {dateRangesOverlap, daysDiff, minDiff, validateRange} from "./helpers/date";
 
 const shouldRenderHeaders = (columnsAmount, headersEnabled) => headersEnabled === undefined ? columnsAmount > 1 : headersEnabled;
 
@@ -23,13 +11,6 @@ const renderDefaultHeader = day => {
     const date = day.date.getDate();
     const month = day.date.getMonth();
     return `${date < 9 ? '0' + date : date}.${month < 9 ? '0' + month : month}`;
-};
-
-const validateRange = ({date, range}) => {
-    for (const [key, value] of Object.entries({date, from: range?.from, till: range?.till})) {
-        if (value && typeof value !== 'string' && !(value instanceof Date))
-            console.error(`Invalid type of property ${key}. Expected nothing, instance of Date or ISO string, got ${value}`);
-    }
 };
 
 /**
@@ -144,11 +125,12 @@ export default function Timetable(props) {
         if (!Array.isArray(props.items))
             return;
 
-        const items = [];
+        let positionedEvents = [];
 
-        props.items?.forEach?.((item, dayIndex) => {
+        // Checking event before clusterizing if they have valid data
+        const checkEvents = props.items?.map?.((item) => {
             if (typeof item !== "object") {
-                __DEV__ && console.warn(`Invalid item of type [${typeof item}] supplied to Timetable, expected [object]`);
+                __DEV__ && console.warn(`Invalid item of type [${typeof item}] supplied to Timeline, expected [object]`);
                 return;
             }
 
@@ -157,44 +139,71 @@ export default function Timetable(props) {
                 {name: 'end', value: item[endProperty]},
             ]) {
                 if (!value || (typeof value !== 'string' && typeof value !== 'object')) {
-                    __DEV__ && console.warn(`Invalid ${name} date of item ${JSON.stringify(item)}, expected ISO string or Date object, got ${value}`);
+                    __DEV__ && console.warn(`Invalid ${name} date of item ${item}, expected ISO string or Date object, got [${value}]`);
                     return;
                 }
             }
 
-            const itemStart = new Date(item[startProperty]);
-            const itemEnd = new Date(item[endProperty]);
+            return item;
+        });
 
+        const {preparedEvents, minutes} = prepareTimetable(checkEvents, startProperty, endProperty);
+        const clusteredTimetable = clusterizer(preparedEvents, minutes);
+        setClusterWidth(clusteredTimetable, columnWidth);
+        setNodesPosition(clusteredTimetable);
+
+        for (let nodeId in clusteredTimetable.nodes) {
+            let node = clusteredTimetable.nodes[nodeId];
+            let data = node?.data;
+
+            const itemStart = new Date(data?.[startProperty]);
+            const itemEnd = new Date(data?.[endProperty]);
             const daysTotal = daysDiff(itemStart, itemEnd) + 1;
 
             columnDays.forEach((columnDay, columnIndex) => {
                 if (!dateRangesOverlap(columnDay.start, columnDay.end, itemStart, itemEnd))
                     return;
 
+                const neighboursCount = Object.keys(node?.neighbours).length;
                 const start = Math.max(+columnDay.start, +itemStart); // card begins either at column's beginning or item's start time, whatever is greater
                 const end = Math.min(+columnDay.end + 1, +itemEnd); // card ends either at column's end or item's end time, whatever is lesser
+                const countedClusterWidth = node.cluster.width * node.position;
 
                 const height = minDiff(start, end) * minuteHeight;
                 const top = calculateTopOffset(start);
-                let width = columnWidth - (columnHorizontalPadding * 2);
-                let left = linesLeftOffset + columnIndex * columnWidth + columnHorizontalPadding;
+                let width = neighboursCount > 0
+                    ? columnIndex > 0
+                        ? node.cluster.width - (columnHorizontalPadding)
+                        : node.cluster.width
+                    : node.cluster.width - (columnHorizontalPadding * 2);
+                let left = (linesLeftOffset + columnIndex * columnWidth + columnHorizontalPadding) + countedClusterWidth;
+
+                if (neighboursCount > 0 && node?.isLast) {
+                    width = node.cluster.width - (columnHorizontalPadding * 2);
+                }
 
                 if (columnIndex === 0) {
                     width = width - linesLeftInset;
                     left = left + linesLeftInset;
                 }
 
-                items.push({
-                    key: '' + dayIndex + columnIndex + +itemStart + +itemEnd,
-                    style: {position: 'absolute', zIndex: 3, width, height, top, left},
-                    item,
-                    dayIndex: dayIndex + 1,
+                positionedEvents.push({
+                    key: node.key,
+                    item: node.data,
                     daysTotal,
+                    style: {
+                        position: 'absolute',
+                        zIndex: 3,
+                        top,
+                        left,
+                        height,
+                        width
+                    },
                 });
             });
-        });
+        }
 
-        setItems(items);
+        setItems(positionedEvents);
     }, [
         props.items,
         columnDays,
