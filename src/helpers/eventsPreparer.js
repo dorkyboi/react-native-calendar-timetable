@@ -4,7 +4,7 @@ import {TOTAL_MINUTES} from "../constants/constants";
 
 // Algorithm to separating events and mapping all neighbours between each other
 export const clusterizer = (events, minutes) => {
-    // Object with mapped nodes with structure described at the top
+    // Object with mapped nodes with structure described in the entities.js
     let nodeMap = {};
     let clusteredTimetable = {
         clusters: [],
@@ -31,14 +31,16 @@ export const clusterizer = (events, minutes) => {
             return;
         }
 
-        if (cluster !== null) {
-            // Push cluster to timetable
+         // Push cluster to timetable
+        if (cluster !== null) 
             clusteredTimetable?.clusters.push(cluster);
-            cluster = null;
-        }
+       
+        
+        cluster = null;
     });
 
-    if (cluster !== null) clusteredTimetable?.clusters.push(cluster);
+    if (cluster !== null) 
+        clusteredTimetable?.clusters.push(cluster);
 
     minutes?.forEach(minute => {
         minute?.forEach(eventKey => {
