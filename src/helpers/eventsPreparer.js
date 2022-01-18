@@ -31,7 +31,7 @@ export const clusterizer = (events, minutes) => {
             return;
         }
 
-         // Push cluster to timetable
+        // Push cluster to timetable
         if (cluster !== null) 
             clusteredTimetable?.clusters.push(cluster);
        
