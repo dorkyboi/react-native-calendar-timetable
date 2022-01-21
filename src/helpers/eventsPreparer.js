@@ -80,7 +80,7 @@ export const prepareTimetable = (data, startProperty, endProperty) => {
         clonedObj.end = countedEndMinutes;
 
         // Adding events to minutes array
-        for (let eventMinute = countedStartMinutes; eventMinute < countedEndMinutes; eventMinute++) {
+        for (let eventMinute = countedStartMinutes; eventMinute <= countedEndMinutes; eventMinute++) {
             minutes?.[eventMinute]?.push(clonedObj.key);
         }
 
