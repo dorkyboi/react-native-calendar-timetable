@@ -34,6 +34,7 @@ const renderDefaultHeader = day => {
  *
  * @param {?Number} props.width Width of whole component
  * @param {?Number} props.timeWidth Width of time containers
+ * @param {?Number} props.itemMinHeightInMinutes item min height in minutes
  * @param {?Number} props.hourHeight Height of hour row
  * @param {?Number} props.columnWidth Width of day columns
  * @param {?Number} props.columnHeaderHeight Height of the container of column's header
@@ -95,6 +96,7 @@ export default function Timetable(props) {
 
     const hourHeight = props.hasOwnProperty('hourHeight') ? props.hourHeight : 60;
     const minuteHeight = hourHeight / 60;
+    const itemMinHeight = Math.max(props?.itemMinHeightInMinutes || 25, 25);
 
     const columnWidth = props.hasOwnProperty('columnWidth') ? props.columnWidth : width - (timeWidth - linesLeftInset);
     const columnHeaderHeight = props.hasOwnProperty('columnHeaderHeight') ? props.columnHeaderHeight : hourHeight / 2;
@@ -127,27 +129,7 @@ export default function Timetable(props) {
 
         let positionedEvents = [];
 
-        // Checking event before clusterizing if they have valid data
-        const checkEvents = props.items?.map?.((item) => {
-            if (typeof item !== "object") {
-                __DEV__ && console.warn(`Invalid item of type [${typeof item}] supplied to Timeline, expected [object]`);
-                return;
-            }
-
-            for (const {name, value} of [
-                {name: 'start', value: item[startProperty]},
-                {name: 'end', value: item[endProperty]},
-            ]) {
-                if (!value || (typeof value !== 'string' && typeof value !== 'object')) {
-                    __DEV__ && console.warn(`Invalid ${name} date of item ${item}, expected ISO string or Date object, got [${value}]`);
-                    return;
-                }
-            }
-
-            return item;
-        });
-
-        const {preparedEvents, minutes} = prepareTimetable(checkEvents, startProperty, endProperty);
+        const {preparedEvents, minutes} = prepareTimetable(props.items, startProperty, endProperty, itemMinHeight);
         const clusteredTimetable = clusterizer(preparedEvents, minutes);
         setClusterWidth(clusteredTimetable, columnWidth);
         setNodesPosition(clusteredTimetable);
@@ -158,6 +140,8 @@ export default function Timetable(props) {
 
             const itemStart = new Date(data?.[startProperty]);
             const itemEnd = new Date(data?.[endProperty]);
+            const itemMinEnd = new Date(itemStart);
+            itemMinEnd.setMinutes(itemStart.getMinutes() + itemMinHeight);
             const daysTotal = daysDiff(itemStart, itemEnd) + 1;
 
             columnDays.forEach((columnDay, columnIndex) => {
@@ -166,13 +150,12 @@ export default function Timetable(props) {
 
                 const neighboursCount = Object.keys(node?.neighbours).length;
                 const start = Math.max(+columnDay.start, +itemStart); // card begins either at column's beginning or item's start time, whatever is greater
-                const end = Math.min(+columnDay.end + 1, +itemEnd); // card ends either at column's end or item's end time, whatever is lesser
+                const end = Math.min(+columnDay.end + 1, Math.max(+itemEnd, +itemMinEnd)); // card ends either at column's end or item's end time, whatever is lesser
                 const countedClusterWidth = node.cluster.width * node.position;
 
                 const height = minDiff(start, end) * minuteHeight;
                 const top = calculateTopOffset(start);
-                let width = neighboursCount > 0
-                    ? columnIndex > 0
+                let width = neighboursCount > 0 ? columnIndex > 0
                         ? node.cluster.width - (columnHorizontalPadding)
                         : node.cluster.width
                     : node.cluster.width - (columnHorizontalPadding * 2);

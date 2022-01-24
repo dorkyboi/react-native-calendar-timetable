@@ -32,15 +32,15 @@ export const clusterizer = (events, minutes) => {
         }
 
         // Push cluster to timetable
-        if (cluster !== null) 
-            clusteredTimetable?.clusters.push(cluster);
-       
-        
+        if (cluster !== null)
+            clusteredTimetable.clusters.push(cluster);
+
+
         cluster = null;
     });
 
-    if (cluster !== null) 
-        clusteredTimetable?.clusters.push(cluster);
+    if (cluster !== null)
+        clusteredTimetable.clusters.push(cluster);
 
     minutes?.forEach(minute => {
         minute?.forEach(eventKey => {
@@ -61,7 +61,7 @@ export const clusterizer = (events, minutes) => {
 };
 
 // Function which prepare initial structure and add events key per every minute where this event exist
-export const prepareTimetable = (data, startProperty, endProperty) => {
+export const prepareTimetable = (items, startProperty, endProperty, itemMinHeightInMinutes) => {
     const minutes = [];
 
     // Creating array of minutes where length should be 1440 minutes (24hours)
@@ -70,9 +70,28 @@ export const prepareTimetable = (data, startProperty, endProperty) => {
     }
 
     // Preparing events to clusterize, adding (key, start, end) properties
-    const preparedEvents = data?.map((item, index) => {
+    let preparedEvents = [];
+
+    items?.forEach((item, index) => {
+        if (typeof item !== "object") {
+            __DEV__ && console.warn(`Invalid item of type [${typeof item}] supplied to Timeline, expected [object]`);
+            return;
+        }
+
+        for (const {name, value} of [
+            {name: 'start', value: item[startProperty]},
+            {name: 'end', value: item[endProperty]},
+        ]) {
+            if (!value || (typeof value !== 'string' && typeof value !== 'object')) {
+                __DEV__  && console.warn(`Invalid ${name} date of item ${item}, expected ISO string or Date object, got [${value}]`);
+                return;
+            }
+        }
+
         let countedStartMinutes = getDayMinutes(item[startProperty]);
-        let countedEndMinutes = getDayMinutes(item[endProperty]);
+        let endMinutes = getDayMinutes(item[endProperty]);
+        let countedEndMinutes = Math.max(endMinutes, countedStartMinutes + itemMinHeightInMinutes);
+
         // Creating new object without reference to avoid direct state change
         const clonedObj = {...item};
         clonedObj.key = '' + index + item[startProperty] + item[endProperty];
@@ -84,7 +103,7 @@ export const prepareTimetable = (data, startProperty, endProperty) => {
             minutes?.[eventMinute]?.push(clonedObj.key);
         }
 
-        return clonedObj;
+        preparedEvents.push(clonedObj);
     });
 
     return {
