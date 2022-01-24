@@ -176,6 +176,7 @@ export default function Timetable(props) {
                     daysTotal,
                     style: {
                         position: 'absolute',
+                        minHeight: minuteHeight,
                         zIndex: 3,
                         top,
                         left,
