@@ -128,16 +128,17 @@ All of these keys must be defined on `style` prop, e.g. `style.container`.
 
 ### Layout
 
-| Key | Type | Default | Description |
-|---|---|---|---|
-| width | Number | `useWindowDimensions().width` | Width of whole component
-| timeWidth | Number | `50` | Width of time containers
-| hourHeight | Number | `60` | Height of hour row
+| Key | Type | Default                                | Description |
+|---|---|----------------------------------------|---|
+| width | Number | `useWindowDimensions().width`          | Width of whole component
+| timeWidth | Number | `50`                                   | Width of time containers
+| hourHeight | Number | `60`                                   | Height of hour row
+| itemMinHeightInMinutes | Number | `25`                                   | Item min height in minutes
 | columnWidth | Number | `width - (timeWidth - linesLeftInset)` | Width of day columns
-| columnHeaderHeight | Number | `hourHeight / 2` | Height of the container of column's header
-| linesTopOffset | Number | `18` | How far the lines are from top border
-| linesLeftInset | Number | `15` | How far the lines are moved left from time's right border
-| columnHorizontalPadding | Number | `10` | Space between column borders and column cards
+| columnHeaderHeight | Number | `hourHeight / 2`                       | Height of the container of column's header
+| linesTopOffset | Number | `18`                                   | How far the lines are from top border
+| linesLeftInset | Number | `15`                                   | How far the lines are moved left from time's right border
+| columnHorizontalPadding | Number | `10`                                   | Space between column borders and column cards
 
 ### Misc
 
