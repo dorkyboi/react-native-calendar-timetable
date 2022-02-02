@@ -3,7 +3,7 @@ import {Text, useWindowDimensions, View, ScrollView} from "react-native";
 import NowLine from "./components/NowLine";
 import {clusterizer, prepareTimetable, setClusterWidth, setNodesPosition} from "./helpers/eventsPreparer";
 import {hours} from "./constants/constants";
-import {dateRangesOverlap, daysDiff, minDiff, validateRange} from "./helpers/date";
+import {dateRangesOverlap, daysDiff, minDiff, normalizeTime, validateRange} from "./helpers/date";
 
 const shouldRenderHeaders = (columnsAmount, headersEnabled) => headersEnabled === undefined ? columnsAmount > 1 : headersEnabled;
 
@@ -59,8 +59,8 @@ export default function Timetable(props) {
 
     const [items, setItems] = React.useState([]);
     const [range, setRange] = React.useState({
-        from: new Date(props.date || props.range?.from),
-        till: new Date(props.date || props.range?.till),
+        from: normalizeTime(props.date || props.range?.from),
+        till: normalizeTime(props.date || props.range?.till, 23, 59, 59, 999),
     });
 
     const fromHour = props.hasOwnProperty('fromHour') ? props.fromHour : 0;
@@ -110,8 +110,8 @@ export default function Timetable(props) {
 
     /* Update range on props change */
     React.useEffect(() => {
-        const from = props.date || props.range?.from;
-        const till = props.date || props.range?.till;
+        const from = normalizeTime(props.date || props.range?.from);
+        const till = normalizeTime(props.date || props.range?.till, 23, 59, 59, 999);
 
         if (!from || !till)
             return;
@@ -129,25 +129,34 @@ export default function Timetable(props) {
 
         let positionedEvents = [];
 
-        const {preparedEvents, minutes} = prepareTimetable(props.items, startProperty, endProperty, itemMinHeight);
-        const clusteredTimetable = clusterizer(preparedEvents, minutes);
-        setClusterWidth(clusteredTimetable, columnWidth);
-        setNodesPosition(clusteredTimetable);
+        columnDays.forEach((columnDay, columnIndex) => {
+            const normalizedStartDate = new Date(normalizeTime(columnDay?.date));
+            const normalizedEndDate =  new Date(normalizeTime(columnDay?.date, 23, 59, 59, 999));
 
-        for (let nodeId in clusteredTimetable.nodes) {
-            let node = clusteredTimetable.nodes[nodeId];
-            let data = node?.data;
+            // Filter event by column date
+            const filteredItems = props?.items.filter(item => dateRangesOverlap(normalizedStartDate, normalizedEndDate, new Date(item[startProperty]), new Date(item[endProperty])));
 
-            const itemStart = new Date(data?.[startProperty]);
-            const itemEnd = new Date(data?.[endProperty]);
-            const itemMinEnd = new Date(itemStart);
-            itemMinEnd.setMinutes(itemStart.getMinutes() + itemMinHeight);
-            const daysTotal = daysDiff(itemStart, itemEnd) + 1;
+            // If length === 0 skip process
+            if (!filteredItems?.length)
+                return;
 
-            columnDays.forEach((columnDay, columnIndex) => {
-                if (!dateRangesOverlap(columnDay.start, columnDay.end, itemStart, itemEnd))
-                    return;
+            const {
+                preparedEvents,
+                minutes
+            } = prepareTimetable(filteredItems, startProperty, endProperty, itemMinHeight);
+            const clusteredTimetable = clusterizer(preparedEvents, minutes);
+            setClusterWidth(clusteredTimetable, columnWidth);
+            setNodesPosition(clusteredTimetable);
 
+            for (let nodeId in clusteredTimetable.nodes) {
+                let node = clusteredTimetable.nodes[nodeId];
+                let data = node?.data;
+
+                const itemStart = new Date(data?.[startProperty]);
+                const itemEnd = new Date(data?.[endProperty]);
+                const itemMinEnd = new Date(itemStart);
+                itemMinEnd.setMinutes(itemStart.getMinutes() + itemMinHeight);
+                const daysTotal = daysDiff(itemStart, itemEnd) + 1;
                 const neighboursCount = Object.keys(node?.neighbours).length;
                 const start = Math.max(+columnDay.start, +itemStart); // card begins either at column's beginning or item's start time, whatever is greater
                 const end = Math.min(+columnDay.end + 1, Math.max(+itemEnd, +itemMinEnd)); // card ends either at column's end or item's end time, whatever is lesser
@@ -175,7 +184,7 @@ export default function Timetable(props) {
                     item: node.data,
                     daysTotal,
                     style: {
-                        position: 'absolute',                
+                        position: 'absolute',
                         zIndex: 3,
                         top,
                         left,
@@ -183,8 +192,8 @@ export default function Timetable(props) {
                         width
                     },
                 });
-            });
-        }
+            }
+        });
 
         setItems(positionedEvents);
     }, [

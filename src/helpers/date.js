@@ -24,3 +24,9 @@ export const validateRange = ({date, range}) => {
             console.error(`Invalid type of property ${key}. Expected nothing, instance of Date or ISO string, got ${value}`);
     }
 };
+
+export const normalizeTime = (date, hours = 0, min = 0, sec = 0, ms = 0) => {
+    let preparedDate = new Date(date).setUTCHours(hours, min, sec, ms);
+
+    return new Date(preparedDate).toISOString();
+};
