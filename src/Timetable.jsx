@@ -180,7 +180,7 @@ export default function Timetable(props) {
                 }
 
                 positionedEvents.push({
-                    key: node.key,
+                    key: columnIndex + node.key,
                     item: node.data,
                     daysTotal,
                     style: {
