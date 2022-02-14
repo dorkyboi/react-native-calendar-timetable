@@ -26,7 +26,8 @@ export const validateRange = ({date, range}) => {
 };
 
 export const normalizeTime = (date, hours = 0, min = 0, sec = 0, ms = 0) => {
-    let preparedDate = new Date(date).setUTCHours(hours, min, sec, ms);
+    let selectedDate = new Date(date);
+    let preparedDate = selectedDate.setHours(hours, min, sec, ms);
 
     return new Date(preparedDate).toISOString();
 };
