@@ -42,6 +42,7 @@ const renderDefaultHeader = day => {
  * @param {?Number} props.linesLeftInset How far the lines are moved left from time's right border
  * @param {?Number} props.columnHorizontalPadding Space between column borders and column cards
  *
+ * @param {?Boolean} props.hideNowLine Hiding line, example if you don't want to show line on other days
  * @param {?Boolean} props.enableSnapping Enables snapping to columns on scroll
  * @param {?Object} props.scrollViewProps Props for horizontal ScrollView
  * @param {?(Function|Boolean)} props.renderHeader Determines if headers should be rendered and how. By default headers are hidden if there's one column and shown otherwise. Pass `false` to hide headers or pass function that renders column header text `({date, start, end}) => {}` where `start` and `end` are start and end of the day (column)
@@ -275,12 +276,14 @@ export default function Timetable(props) {
                         );
                     })}
 
-                    <NowLine
-                        style={props.style?.nowLine}
-                        calculateTopOffset={calculateTopOffset}
-                        left={linesLeftOffset}
-                        width={columnWidth * columnDays.length}
-                    />
+                    {!props.hideNowLine && (
+                        <NowLine
+                            style={props.style?.nowLine}
+                            calculateTopOffset={calculateTopOffset}
+                            left={linesLeftOffset}
+                            width={columnWidth * columnDays.length}
+                        />
+                    )}
 
                     {/* Cards */}
                     {!!props.cardComponent && items.map(item => <props.cardComponent {...item}/>)}
