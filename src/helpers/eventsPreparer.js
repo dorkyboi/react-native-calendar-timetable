@@ -90,7 +90,7 @@ export const prepareTimetable = (items, startProperty, endProperty, itemMinHeigh
 
         let originalStart = new Date(item[startProperty]);
         let originalEnd = new Date(item[endProperty]);
-        let countedStartMinutes = getDayMinutes(originalStart);
+        let countedStartMinutes = day.start > originalStart ? 0 : getDayMinutes(originalStart);
         let endMinutes = day.end < originalEnd ? TOTAL_MINUTES : getDayMinutes(originalEnd);
         let countedEndMinutes = Math.max(endMinutes, countedStartMinutes + itemMinHeightInMinutes);
 
