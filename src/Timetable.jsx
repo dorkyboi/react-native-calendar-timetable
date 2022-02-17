@@ -144,7 +144,7 @@ export default function Timetable(props) {
             const {
                 preparedEvents,
                 minutes
-            } = prepareTimetable(filteredItems, startProperty, endProperty, itemMinHeight);
+            } = prepareTimetable(filteredItems, startProperty, endProperty, itemMinHeight, columnDay);
             const clusteredTimetable = clusterizer(preparedEvents, minutes);
             setClusterWidth(clusteredTimetable, columnWidth);
             setNodesPosition(clusteredTimetable);

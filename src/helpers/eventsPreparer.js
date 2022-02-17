@@ -61,7 +61,7 @@ export const clusterizer = (events, minutes) => {
 };
 
 // Function which prepare initial structure and add events key per every minute where this event exist
-export const prepareTimetable = (items, startProperty, endProperty, itemMinHeightInMinutes) => {
+export const prepareTimetable = (items, startProperty, endProperty, itemMinHeightInMinutes, day) => {
     const minutes = [];
 
     // Creating array of minutes where length should be 1440 minutes (24hours)
@@ -88,8 +88,10 @@ export const prepareTimetable = (items, startProperty, endProperty, itemMinHeigh
             }
         }
 
-        let countedStartMinutes = getDayMinutes(item[startProperty]);
-        let endMinutes = getDayMinutes(item[endProperty]);
+        let originalStart = new Date(item[startProperty]);
+        let originalEnd = new Date(item[endProperty]);
+        let countedStartMinutes = getDayMinutes(originalStart);
+        let endMinutes = day.end < originalEnd ? TOTAL_MINUTES : getDayMinutes(originalEnd);
         let countedEndMinutes = Math.max(endMinutes, countedStartMinutes + itemMinHeightInMinutes);
 
         // Creating new object without reference to avoid direct state change
