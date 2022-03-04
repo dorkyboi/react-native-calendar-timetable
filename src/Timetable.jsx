@@ -135,7 +135,7 @@ export default function Timetable(props) {
             const normalizedEndDate =  new Date(normalizeTime(columnDay?.date, 23, 59, 59, 999));
 
             // Filter event by column date
-            const filteredItems = props?.items.filter(item => dateRangesOverlap(normalizedStartDate, normalizedEndDate, new Date(item[startProperty]), new Date(item[endProperty])));
+            const filteredItems = props?.items.filter(item => dateRangesOverlap(normalizedStartDate, normalizedEndDate, new Date(item?.[startProperty]), new Date(item?.[endProperty])));
 
             // If length === 0 skip process
             if (!filteredItems?.length)
