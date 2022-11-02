@@ -50,6 +50,7 @@ const renderDefaultHeader = day => {
  * @param {?String} props.endProperty Name of the property that has item's end date
  * @param {?Number} props.fromHour First hour of the timetable
  * @param {?Number} props.toHour Last hour of the timetable
+ * @param {?Boolean} props.is12Hour Option to set time to 12h mode
  *
  * @returns {JSX.Element}
  */
@@ -214,6 +215,10 @@ export default function Timetable(props) {
         return (Math.max((d.getHours() - fromHour), 0) * 60 + d.getMinutes()) * minuteHeight + linesTopOffset;
     };
 
+    const renderTime = hour => props.is12Hour
+        ? (hour > 12 ? (hour - 12 + ':00 PM') : hour + ':00 AM')
+        : (hour > 9 ? '' : '0') + (hour === 24 ? '00' : hour) + ':00';
+
     return (
         <ScrollView
             horizontal={true}
@@ -254,7 +259,7 @@ export default function Timetable(props) {
                                     width: timeWidth,
                                 }}>
                                     <Text style={props.style?.time}>
-                                        {(hour > 9 ? '' : '0') + (hour === 24 ? '00' : hour) + ':00'}
+                                        {renderTime(hour)}
                                     </Text>
                                 </View>
 
