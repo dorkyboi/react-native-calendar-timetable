@@ -128,30 +128,31 @@ All of these keys must be defined on `style` prop, e.g. `style.container`.
 
 ### Layout
 
-| Key | Type | Default                                | Description |
-|---|---|----------------------------------------|---|
-| width | Number | `useWindowDimensions().width`          | Width of whole component
-| timeWidth | Number | `50`                                   | Width of time containers
-| hourHeight | Number | `60`                                   | Height of hour row
-| itemMinHeightInMinutes | Number | `25`                                   | Item min height in minutes
-| columnWidth | Number | `width - (timeWidth - linesLeftInset)` | Width of day columns
-| columnHeaderHeight | Number | `hourHeight / 2`                       | Height of the container of column's header
-| linesTopOffset | Number | `18`                                   | How far the lines are from top border
-| linesLeftInset | Number | `15`                                   | How far the lines are moved left from time's right border
-| columnHorizontalPadding | Number | `10`                                   | Space between column borders and column cards
+| Key                     | Type   | Default                                | Description                                               |
+|-------------------------|--------|----------------------------------------|-----------------------------------------------------------|
+| width                   | Number | `useWindowDimensions().width`          | Width of whole component                                  |
+| timeWidth               | Number | `50`                                   | Width of time containers                                  |
+| hourHeight              | Number | `60`                                   | Height of hour row                                        |
+| itemMinHeightInMinutes  | Number | `25`                                   | Item min height in minutes                                |
+| columnWidth             | Number | `width - (timeWidth - linesLeftInset)` | Width of day columns                                      |
+| columnHeaderHeight      | Number | `hourHeight / 2`                       | Height of the container of column's header                |
+| linesTopOffset          | Number | `18`                                   | How far the lines are from top border                     |
+| linesLeftInset          | Number | `15`                                   | How far the lines are moved left from time's right border |
+| columnHorizontalPadding | Number | `10`                                   | Space between column borders and column cards             |
 
 ### Misc
 
-| Key            | Type | Default | Description |
-|----------------|---|---|---|
-| hideNowLine    | Boolean | `undefined` | Hiding line, example if you don't want to show line on other days |
-| enableSnapping | Boolean | `undefined` | Enables snapping to columns on scroll |
-| scrollViewProps | Object |  | Props for horizontal ScrollView |
-| renderHeader   | Function, Boolean |  | Determines if headers should be rendered and how. By default headers are hidden if there's one column and shown otherwise. Pass `false` to hide headers or pass function that renders column header text `({date, start, end}) => {}` where `start` and `end` are start and end of the day (column)
-| startProperty  | String | `'startDate'` | Name of the property that has item's start date |
-| endProperty    | String | `'endDate'` | Name of the property that has item's end date |
-| fromHour       | Number | `0` | First hour of the timetable |
-| toHour         | Number | `24` | Last hour of the timetable |
+| Key             | Type              | Default       | Description                                                                                                                                                                                                                                                                                         |
+|-----------------|-------------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| hideNowLine     | Boolean           | `undefined`   | Hiding line, example if you don't want to show line on other days                                                                                                                                                                                                                                   |
+| enableSnapping  | Boolean           | `undefined`   | Enables snapping to columns on scroll                                                                                                                                                                                                                                                               |
+| scrollViewProps | Object            |               | Props for horizontal ScrollView                                                                                                                                                                                                                                                                     |
+| renderHeader    | Function, Boolean |               | Determines if headers should be rendered and how. By default headers are hidden if there's one column and shown otherwise. Pass `false` to hide headers or pass function that renders column header text `({date, start, end}) => {}` where `start` and `end` are start and end of the day (column) |
+| startProperty   | String            | `'startDate'` | Name of the property that has item's start date                                                                                                                                                                                                                                                     |
+| endProperty     | String            | `'endDate'`   | Name of the property that has item's end date                                                                                                                                                                                                                                                       |
+| fromHour        | Number            | `0`           | First hour of the timetable                                                                                                                                                                                                                                                                         |
+| toHour          | Number            | `24`          | Last hour of the timetable                                                                                                                                                                                                                                                                          |
+| is12Hour        | Boolean           |               | Option to set time to 12h mode                                                                                                                                                                                                                                                                      |
 
 ## License
 
