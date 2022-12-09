@@ -216,7 +216,7 @@ export default function Timetable(props) {
     };
 
     const renderTime = hour => props.is12Hour
-        ? (hour > 12 ? (hour - 12 + ':00 PM') : hour + ':00 AM')
+        ? (hour > 12 ? (hour - 12 + ' pm') : hour + ' am')
         : (hour > 9 ? '' : '0') + (hour === 24 ? '00' : hour) + ':00';
 
     return (
