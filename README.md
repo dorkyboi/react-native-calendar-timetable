@@ -60,11 +60,11 @@ export default function App() {
             <Timetable
                 // these two are required
                 items={items}
-                cardComponent={MyItemCard}
+                renderItem={props => <YourComponent {...props}/>}
 
-                // provide only one of these if you need to
-                date={date} // optional
-                range={range} // optional
+                // provide only one of these
+                date={date}
+                range={range}
             />
         </ScrollView>
     );
@@ -72,7 +72,7 @@ export default function App() {
 ```
 <br/>
 
-`CardComponent` example
+`YourComponent` example
 
 ```js
 /**
@@ -82,7 +82,7 @@ export default function App() {
  * @param dayIndex For multiday items inicates current day index
  * @param daysTotal For multiday items indicates total amount of days
  */
-export default function MyItemCard({style, item, dayIndex, daysTotal}) {
+export default function YourComponent({style, item, dayIndex, daysTotal}) {
     return (
         <View style={{
             ...style, // apply calculated styles, be careful not to override these accidentally (unless you know what you are doing)
