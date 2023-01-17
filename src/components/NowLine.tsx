@@ -1,12 +1,13 @@
-import React from "react";
+import {useEffect, useState} from "react";
 import {View} from "react-native";
+import {NowLineProps} from "../types";
 
-export default function NowLine({style, left, width, calculateTopOffset}) {
-    const [now, setNow] = React.useState(new Date());
+function NowLine({style, left, width, calculateTopOffset}: NowLineProps) {
+    const [now, setNow] = useState(new Date());
 
-    // move current time line every minute
-    React.useEffect(() => {
-        let timeout = null;
+    // move 'current time' line every minute
+    useEffect(() => {
+        let timeout: NodeJS.Timeout;
 
         const update = () => {
             timeout = setTimeout(() => {
@@ -21,7 +22,7 @@ export default function NowLine({style, left, width, calculateTopOffset}) {
 
     // validate style props
     if (__DEV__) {
-        React.useEffect(() => {
+        useEffect(() => {
             const allowedDotStyles = ['width', 'height', 'backgroundColor', 'borderRadius', 'zIndex', 'elevation'];
             for (const key in style?.dot) {
                 if (!allowedDotStyles.includes(key))
@@ -40,7 +41,7 @@ export default function NowLine({style, left, width, calculateTopOffset}) {
 
     return (
         <View style={{
-            top: calculateTopOffset(now),
+            top: calculateTopOffset(+now),
             left: left - size / 2 + 0.5,
             width,
             position: 'absolute',
@@ -66,4 +67,6 @@ export default function NowLine({style, left, width, calculateTopOffset}) {
             }}/>
         </View>
     );
-};
+}
+
+export default NowLine;

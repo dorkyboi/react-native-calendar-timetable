@@ -3,7 +3,11 @@
     "description": "Timetable (schedule) component for React Native applications",
     "version": "0.4.8",
     "private": false,
-    "main": "index",
+    "main": "lib/index.js",
+    "types": "lib/types.d.ts",
+    "files": [
+        "lib/**/*"
+    ],
     "author": {
         "name": "Dmytro Kardava",
         "email": "dima.kardava@gmail.com",
@@ -24,12 +28,15 @@
         "schedule"
     ],
     "peerDependencies": {
-        "react": "^17.0.2",
-        "react-native": "^0.63"
+        "react": "*",
+        "react-native": "*"
     },
     "devDependencies": {
-        "react": "^17.0.2",
-        "react-native": "^0.63"
+        "react": "18.1.0",
+        "react-native": "^0.70",
+        "typescript": "^4.9.4",
+        "@types/react": "~18.0.14",
+        "@types/react-native": "~0.70.6"
     },
     "license": "MIT"
 }

@@ -107,18 +107,18 @@ All of these keys must be defined on `style` prop, e.g. `style.container`.
 > They were not ignored to allow customization in some extreme edge cases.
 > Refer to [Layout](#layout) segment for layout customization.
 
-| Key | Style type | Description |
-|---|---|---|
-| container | View | Styles of the main container |
-| headerContainer | View | Styles of the container of column's header |
-| headerText | Text | Styles of the Text of column's header |
-| headersContainer | View | Styles of the View that wraps all header containers |
-| contentContainer | View | Styles of the container of lines and cards |
-| timeContainer | View | Styles of time containers |
-| time | Text | Styles of time text |
-| lines | View | Styles of Views that render lines |
-| nowLine.dot | View* | Styles of the circle of the 'current time' line |
-| nowLine.line | View** | Styles of the line of the 'current time' line |
+| Key              | Style type | Description                                         |
+|------------------|------------|-----------------------------------------------------|
+| container        | View       | Styles of the main container                        |
+| headerContainer  | View       | Styles of the container of column's header          |
+| headerText       | Text       | Styles of the Text of column's header               |
+| headersContainer | View       | Styles of the View that wraps all header containers |
+| contentContainer | View       | Styles of the container of lines and cards          |
+| timeContainer    | View       | Styles of time containers                           |
+| time             | Text       | Styles of time text                                 |
+| lines            | View       | Styles of Views that render lines                   |
+| nowLine.dot      | View*      | Styles of the circle of the 'current time' line     |
+| nowLine.line     | View**     | Styles of the line of the 'current time' line       |
 
 \*, \*\* due to how these Views are used, their customization options were limited:
 

@@ -1,17 +1,23 @@
-import {createCluster, createNode} from "./creators";
+import {Cluster, createCluster, createNode, Node} from "./creators";
 import {getDayMinutes} from "./date";
-import {TOTAL_MINUTES} from "../constants/constants";
+import {Day} from "../types";
+
+type Item<T> = T & { key: string, start: number, end: number };
+
+interface Timetable<T> {
+    clusters: Cluster<T>[],
+    nodes: { [key: string]: Node<T> },
+}
+
+const TotalMinutesInDay = (24 * 60) + 1;
 
 // Algorithm to separating events and mapping all neighbours between each other
-export const clusterizer = (events, minutes) => {
-    // Object with mapped nodes with structure described in the creators.js
-    let nodeMap = {};
-    let clusteredTimetable = {
-        clusters: [],
-        nodes: {},
-    };
-    // Object with nodes for each cluster with structure described in the creators.js
-    let cluster = null;
+export function clusterizer<T>(events: Item<T>[], minutes: string[][]): Timetable<T> {
+    // Object with mapped nodes with structure described in the creators.ts
+    let nodeMap: { [key: string]: Node<T> } = {};
+    let clusters: Cluster<T>[] = [];
+    // Object with nodes for each cluster with structure described in the creators.ts
+    let cluster: Cluster<T> | null = null;
 
     events?.forEach(event => {
         nodeMap[event.key] = createNode(event.key, event.start, event.end, event);
@@ -19,9 +25,10 @@ export const clusterizer = (events, minutes) => {
 
     minutes?.forEach(minute => {
         if (minute?.length > 0) {
-            cluster = cluster || createCluster();
-
             minute.forEach(eventKey => {
+                if (cluster === null)
+                    cluster = createCluster();
+
                 if (!cluster.nodes[eventKey]) {
                     cluster.nodes[eventKey] = nodeMap[eventKey];
                     nodeMap[eventKey].cluster = cluster;
@@ -33,14 +40,13 @@ export const clusterizer = (events, minutes) => {
 
         // Push cluster to timetable
         if (cluster !== null)
-            clusteredTimetable.clusters.push(cluster);
-
+            clusters.push(cluster);
 
         cluster = null;
     });
 
     if (cluster !== null)
-        clusteredTimetable.clusters.push(cluster);
+        clusters.push(cluster);
 
     minutes?.forEach(minute => {
         minute?.forEach(eventKey => {
@@ -55,50 +61,59 @@ export const clusterizer = (events, minutes) => {
         });
     });
 
-    clusteredTimetable.nodes = nodeMap;
-
-    return clusteredTimetable;
-};
+    return {clusters, nodes: nodeMap};
+}
 
 // Function which prepare initial structure and add events key per every minute where this event exist
-export const prepareTimetable = (items, startProperty, endProperty, itemMinHeightInMinutes, day) => {
-    const minutes = [];
+export function prepareTimetable<T>(
+    items: T[],
+    startProperty: keyof T,
+    endProperty: keyof T,
+    itemMinHeightInMinutes: number,
+    day: Day
+) {
+    const minutes: string[][] = [];
 
     // Creating array of minutes where length should be 1440 minutes (24hours)
-    for (let minute = 1; minute < TOTAL_MINUTES; minute++) {
+    for (let minute = 1; minute < TotalMinutesInDay; minute++) {
         minutes[minute] = [];
     }
 
     // Preparing events to clusterize, adding (key, start, end) properties
-    let preparedEvents = [];
+    let preparedEvents: Item<T>[] = [];
 
     items?.forEach((item, index) => {
-        if (typeof item !== "object") {
+        if (typeof item !== "object" || item === null) {
             __DEV__ && console.warn(`Invalid item of type [${typeof item}] supplied to Timeline, expected [object]`);
             return;
         }
 
+        const start = item[startProperty];
+        const end = item[endProperty];
+
         for (const {name, value} of [
-            {name: 'start', value: item[startProperty]},
-            {name: 'end', value: item[endProperty]},
+            {name: 'start', value: start},
+            {name: 'end', value: end},
         ]) {
-            if (!value || (typeof value !== 'string' && typeof value !== 'object')) {
-                __DEV__  && console.warn(`Invalid ${name} date of item ${item}, expected ISO string or Date object, got [${value}]`);
+            if (!value || (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'object')) {
+                __DEV__ && console.warn(`Invalid ${name} date of item ${item}, expected ISO string, UNIX timestamp or Date object, got [${value}]`);
                 return;
             }
         }
 
-        let originalStart = new Date(item[startProperty]);
-        let originalEnd = new Date(item[endProperty]);
+        let originalStart = new Date(start as string | number | Date);
+        let originalEnd = new Date(end as string | number | Date);
         let countedStartMinutes = day.start > originalStart ? 0 : getDayMinutes(originalStart);
-        let endMinutes = day.end < originalEnd ? TOTAL_MINUTES : getDayMinutes(originalEnd);
+        let endMinutes = day.end < originalEnd ? TotalMinutesInDay : getDayMinutes(originalEnd);
         let countedEndMinutes = Math.max(endMinutes, countedStartMinutes + itemMinHeightInMinutes);
 
         // Creating new object without reference to avoid direct state change
-        const clonedObj = {...item};
-        clonedObj.key = '' + index + item[startProperty] + item[endProperty];
-        clonedObj.start = countedStartMinutes;
-        clonedObj.end = countedEndMinutes;
+        const clonedObj: Item<T> = {
+            ...item,
+            key: '' + index + item[startProperty] + item[endProperty],
+            start: countedStartMinutes,
+            end: countedEndMinutes,
+        };
 
         // Adding events to minutes array
         for (let eventMinute = countedStartMinutes; eventMinute <= countedEndMinutes; eventMinute++) {
@@ -112,9 +127,9 @@ export const prepareTimetable = (items, startProperty, endProperty, itemMinHeigh
         preparedEvents,
         minutes
     };
-};
+}
 
-export const setClusterWidth = (timetable, columnWidth) => {
+export function setClusterWidth<T>(timetable: Timetable<T>, columnWidth: number) {
     timetable.clusters.forEach(cluster => {
         let maxGroupSize = 1;
         let neighboursCount = 0;
@@ -129,12 +144,14 @@ export const setClusterWidth = (timetable, columnWidth) => {
         cluster.maxGroupSize = maxGroupSize;
         cluster.width = clusterWidth;
     });
-};
+}
 
-export const setNodesPosition = timetable => {
+export function setNodesPosition<T>(timetable: Timetable<T>) {
     timetable.clusters.forEach(cluster => {
         for (let nodeId in cluster.nodes) {
             let node = cluster.nodes[nodeId];
+            if (!node.cluster)
+                return;
             let positionArray = new Array(node.cluster.maxGroupSize);
 
             for (let neighborId in node.neighbours) {
@@ -154,4 +171,4 @@ export const setNodesPosition = timetable => {
             }
         }
     });
-};
+}
