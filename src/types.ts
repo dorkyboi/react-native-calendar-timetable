@@ -58,6 +58,7 @@ export interface HoursProps {
     timeStyle?: TextStyle,
     timeContainerStyle?: StyleProp<ViewStyle>,
     linesStyle?: StyleProp<ViewStyle>,
+    renderHour?: (hour: number) => ReactNode,
 }
 
 type Values = {
@@ -125,6 +126,8 @@ export type TimetableProps<I = any> = Values & {
     scrollViewProps?: ScrollViewProps,
     // Determines if headers should be rendered and how. By default, headers are hidden if there's one column and shown otherwise. Pass `false` to hide headers or pass function that renders column header text `({date, start, end}) => {}` where `start` and `end` are start and end of the day (column)
     renderHeader?: HeadersProps["renderHeader"],
+    // Function that renders time component for a given hour
+    renderHour?: HoursProps["renderHour"],
     // Name of the property that has item's start date
     startProperty?: keyof I,
     // Name of the property that has item's end date

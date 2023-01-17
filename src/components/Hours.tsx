@@ -17,6 +17,7 @@ function Hours({
     timeStyle,
     timeContainerStyle,
     linesStyle,
+    renderHour,
 }: HoursProps) {
     const timeFontSize = timeStyle?.fontSize || 14;
 
@@ -35,9 +36,12 @@ function Hours({
                             {width: timeWidth, left: offsetX},
                         ]}
                     >
-                        <Text style={timeStyle}>
-                            {renderTime(hour)}
-                        </Text>
+                        {!!renderHour && renderHour(hour)}
+                        {!renderHour && (
+                            <Text style={timeStyle}>
+                                {renderTime(hour)}
+                            </Text>
+                        )}
                     </Animated.View>
 
                     {/* Day columns / hour lines */}

@@ -30,12 +30,11 @@ function Timetable<I>({
     columnHorizontalPadding = 10,
 
     renderHeader,
+    renderHour,
     startProperty = 'startDate' as keyof I,
     endProperty = 'endDate' as keyof I,
     ...props
 }: TimetableProps<I>) {
-    // __DEV__ && validateRange(props);
-
     const screenWidth = useWindowDimensions().width;
 
     const range = {
@@ -202,6 +201,7 @@ function Timetable<I>({
                         timeContainerStyle={style?.timeContainer}
                         linesStyle={style?.lines}
                         is12Hour={props?.is12Hour}
+                        renderHour={renderHour}
                     />
 
                     {!props.hideNowLine && (
