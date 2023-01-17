@@ -8,6 +8,8 @@
             "ESNext"
         ],
         "outDir": "./lib",
+        "rootDir": "src",
+        "moduleResolution": "node",
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
