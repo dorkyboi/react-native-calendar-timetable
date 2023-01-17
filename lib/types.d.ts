@@ -38,7 +38,7 @@ export interface NowLineProps {
     calculateTopOffset: (date: number) => number;
 }
 export interface HoursProps {
-    offsetX: Animated.Value;
+    offsetX?: Animated.Value;
     columnDays: Day[];
     columnWidth: number;
     linesTopOffset: number;
@@ -86,6 +86,7 @@ export type TimetableProps<I = any> = Values & {
     linesTopOffset?: number;
     linesLeftInset?: number;
     columnHorizontalPadding?: number;
+    stickyHours?: boolean;
     hideNowLine?: boolean;
     enableSnapping?: boolean;
     scrollViewProps?: ScrollViewProps;

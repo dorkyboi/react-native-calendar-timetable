@@ -45,7 +45,7 @@ export interface NowLineProps {
 }
 
 export interface HoursProps {
-    offsetX: Animated.Value,
+    offsetX?: Animated.Value,
     columnDays: Day[],
     columnWidth: number,
     linesTopOffset: number,
@@ -118,6 +118,8 @@ export type TimetableProps<I = any> = Values & {
     // Space between column borders and column cards
     columnHorizontalPadding?: number,
 
+    // Enables sticky hours for horizontal scroll
+    stickyHours?: boolean,
     // Hiding line, example if you don't want to show line on other days
     hideNowLine?: boolean,
     // Enables snapping to columns on scroll

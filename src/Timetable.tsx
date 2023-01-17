@@ -29,6 +29,7 @@ function Timetable<I>({
     linesLeftInset = 15,
     columnHorizontalPadding = 10,
 
+    stickyHours,
     renderHeader,
     renderHour,
     startProperty = 'startDate' as keyof I,
@@ -169,9 +170,9 @@ function Timetable<I>({
         <Animated.ScrollView
             horizontal={true}
             snapToInterval={props.enableSnapping ? columnWidth : undefined}
-            onScroll={Animated.event([{nativeEvent: {contentOffset: {x: scrollX}}}], {
+            onScroll={stickyHours ? Animated.event([{nativeEvent: {contentOffset: {x: scrollX}}}], {
                 useNativeDriver: false,
-            })}
+            }) : undefined}
             {...props.scrollViewProps}
         >
             <View style={style?.container}>
