@@ -11,7 +11,7 @@ function withDefault<A>(value: A, defaultValue: NonNullable<A>) {
     return typeof value === "undefined" ? defaultValue : value as NonNullable<A>;
 }
 
-function Timetable<I>({
+function Main<I>({
     items,
     renderItem,
     date,
@@ -221,4 +221,4 @@ function Timetable<I>({
     );
 }
 
-export default Timetable;
+export default Main;
