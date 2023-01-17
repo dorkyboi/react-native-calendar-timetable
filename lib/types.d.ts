@@ -51,6 +51,7 @@ export interface HoursProps {
     timeStyle?: TextStyle;
     timeContainerStyle?: StyleProp<ViewStyle>;
     linesStyle?: StyleProp<ViewStyle>;
+    renderHour?: (hour: number) => ReactNode;
 }
 type Values = {
     date: Date;
@@ -89,6 +90,7 @@ export type TimetableProps<I = any> = Values & {
     enableSnapping?: boolean;
     scrollViewProps?: ScrollViewProps;
     renderHeader?: HeadersProps["renderHeader"];
+    renderHour?: HoursProps["renderHour"];
     startProperty?: keyof I;
     endProperty?: keyof I;
     fromHour?: HoursProps["fromHour"];
