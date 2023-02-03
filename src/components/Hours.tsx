@@ -21,9 +21,17 @@ function Hours({
 }: HoursProps) {
     const timeFontSize = timeStyle?.fontSize || 14;
 
-    const renderTime = (hour: number) => is12Hour
-        ? (hour > 12 ? (hour - 12 + ' pm') : hour + ' am')
-        : (hour > 9 ? '' : '0') + (hour === 24 ? '00' : hour) + ':00';
+    const renderTime = (hour: number) => {
+        if (is12Hour) {
+            switch (hour) {
+                case 0: case 24: return '12 am';
+                case 12: return '12 pm';
+                default:
+                    return (hour > 12 ? (hour - 12 + ' pm') : hour + ' am');
+            }
+        }
+        return (hour > 9 ? '' : '0') + (hour === 24 ? '00' : hour) + ':00';
+    };
 
     return (
         <View>
