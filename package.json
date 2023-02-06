@@ -1,7 +1,7 @@
 {
     "name": "react-native-calendar-timetable",
     "description": "Timetable (schedule) component for React Native applications",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "private": false,
     "main": "./lib/Timetable.js",
     "types": "./lib/Timetable.d.ts",
