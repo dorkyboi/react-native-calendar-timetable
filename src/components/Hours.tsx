@@ -1,3 +1,4 @@
+import React from "react";
 import {Animated, StyleSheet, Text, View} from "react-native";
 import {HoursProps} from "../types";
 
